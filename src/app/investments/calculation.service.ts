@@ -194,4 +194,4 @@ export class CalculationService {
 
     return growthData;
   }
-}
+} 
