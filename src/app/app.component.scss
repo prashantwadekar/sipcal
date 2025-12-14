@@ -1,0 +1,57 @@
+/* src/app/app.component.scss */
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--card-background);
+
+    .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+}
+
+.tabs {
+    display: flex;
+    justify-content: flex-start; // Adjusted for a cleaner tab bar
+    padding: 10px 30px;
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+
+    button {
+        padding: 8px 18px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 8px;
+        background-color: transparent;
+        color: var(--text-color);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        &:hover:not(.active) {
+            background-color: #f0f0f5;
+        }
+    }
+}
+
+.content-area {
+    padding: 30px;
+    background-color: var(--background-color);
+}

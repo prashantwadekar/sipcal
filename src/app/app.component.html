@@ -1,0 +1,43 @@
+<div class="app-container">
+  <header class="app-header">
+    <div class="logo">💰 **Prashant-Calculator**</div>
+    <div class="title">Investment Planning Suite</div>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="activeTab === 'SIP'" (click)="setActiveTab('SIP')">
+      Standard SIP
+    </button>
+    <button
+      [class.active]="activeTab === 'Lumpsum'"
+      (click)="setActiveTab('Lumpsum')"
+    >
+      Lumpsum
+    </button>
+    <button
+      [class.active]="activeTab === 'StepUpSIP'"
+      (click)="setActiveTab('StepUpSIP')"
+    >
+      Step-Up SIP
+    </button>
+    <button
+      [class.active]="activeTab === 'Combined'"
+      (click)="setActiveTab('Combined')"
+    >
+      Lumpsum + SIP
+    </button>
+  </nav>
+
+  <main class="content-area">
+    <app-sip-calculator *ngIf="activeTab === 'SIP'"></app-sip-calculator>
+    <app-lumpsum-calculator
+      *ngIf="activeTab === 'Lumpsum'"
+    ></app-lumpsum-calculator>
+    <app-step-up-sip-calculator
+      *ngIf="activeTab === 'StepUpSIP'"
+    ></app-step-up-sip-calculator>
+    <app-combined-calculator
+      *ngIf="activeTab === 'Combined'"
+    ></app-combined-calculator>
+  </main>
+</div>

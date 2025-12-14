@@ -1,0 +1,94 @@
+<div class="calculator-container">
+    <div class="input-panel">
+        <h3 class="panel-title">Lumpsum Investment Parameters</h3>
+
+        <div class="input-group">
+            <label>Total Investment (₹)</label>
+            <input type="number" [(ngModel)]="lumpsumInvestment" min="100" />
+        </div>
+
+        <div class="input-group">
+            <label>Expected Return (% p.a)</label>
+            <input type="number" [(ngModel)]="expectedRate" min="1" max="50" />
+        </div>
+
+        <div class="input-group">
+            <label>Period of Investment (Years)</label>
+            <input type="number" [(ngModel)]="periodInYears" min="1" max="60" />
+        </div>
+
+        <button class="analyze-button" (click)="analyze()">
+            <i class="fas fa-chart-line"></i> Analyze Growth
+        </button>
+
+        <div class="chart-container" *ngIf="isCalculated">
+            <h4 class="chart-title">Corpus Allocation</h4>
+            <div class="donut-chart-wrapper">
+                <div class="donut-chart" [style.--returns-percent]="returnsPercentage + '%'">
+                    <span class="center-text">
+                        <small>Total Value</small>
+                        {{ formatCurrency(finalValue) }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="chart-legend">
+                <div class="legend-item"><span class="color-box invested-color"></span> Invested ({{ investedPercentage }}%)</div>
+                <div class="legend-item"><span class="color-box returns-color"></span> Returns ({{ returnsPercentage }}%)</div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="output-panel" *ngIf="isCalculated">
+        <h3 class="panel-title">Accumulated Corpus</h3>
+        
+        <div class="summary-card">
+            <div class="summary-item">
+                <span class="label">Total Invested</span>
+                <span class="value invested">{{ formatCurrency(finalInvestment) }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Est. Returns</span>
+                <span class="value returns">{{ formatCurrency(finalReturns) }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label total-label">Total Value</span>
+                <span class="value total">{{ formatCurrency(finalValue) }}</span>
+            </div>
+        </div>
+
+        <div class="table-header-row">
+            <h3 class="panel-title table-title">Year-wise Growth Projection</h3>
+            <div class="download-icons">
+                <button class="icon-button excel-icon" (click)="downloadExcel()" title="Download as Excel">
+                    <i class="fas fa-file-excel"></i>
+                </button>
+                <button class="icon-button pdf-icon" (click)="downloadPdf()" title="Download as PDF">
+                    <i class="fas fa-file-pdf"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-scroll">
+            <table class="growth-table" id="growthTable">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Invested Amount (₹)</th>
+                        <th>Est. Returns (₹)</th>
+                        <th>Total Value (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of yearWiseGrowth">
+                        <td>{{ data.year }}</td>
+                        <td>{{ formatCurrency(data.investedAmount) }}</td>
+                        <td>{{ formatCurrency(data.estimatedReturns) }}</td>
+                        <td>{{ formatCurrency(data.totalValue) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
