@@ -4,8 +4,7 @@ import { Component } from '@angular/core';
 import { CalculationService } from '../calculation.service';
 import { InvestmentData } from '../investment-data';
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// jsPDF and html2canvas are dynamically imported inside exportPdf to keep them out of the initial bundle.
 
 @Component({
   selector: 'app-step-up-sip-calculator',
@@ -173,24 +172,26 @@ export class StepUpCalculatorComponent {
   }
 
   // Reusable helper to export a table as PDF
-  private exportPdf(tableId: string, fileName: string) {
+  private async exportPdf(tableId: string, fileName: string) {
     const element = document.getElementById(tableId);
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then((canvas) => {
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 208;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      pdf.addImage(
-        canvas.toDataURL('image/png'),
-        'PNG',
-        0,
-        0,
-        imgWidth,
-        imgHeight
-      );
-      pdf.save(fileName);
-    });
+    const { default: html2canvas } = await import('html2canvas');
+    const { default: jsPDF } = await import('jspdf');
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 208;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(
+      canvas.toDataURL('image/png'),
+      'PNG',
+      0,
+      0,
+      imgWidth,
+      imgHeight
+    );
+    pdf.save(fileName);
   }
 
   // The download methods are the same, just updated the file name string
@@ -222,7 +223,7 @@ export class StepUpCalculatorComponent {
     XLSX.writeFile(wb, fileName);
   }
 
-  downloadPdf(): void {
+  async downloadPdf(): Promise<void> {
     if (!this.isCalculated || this.yearWiseGrowth.length === 0) {
       alert('Please analyze the growth before downloading.');
       return;
@@ -231,27 +232,29 @@ export class StepUpCalculatorComponent {
     const data = document.getElementById('growthTable');
 
     if (data) {
-      html2canvas(data, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 208;
-        const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
+      const { default: html2canvas } = await import('html2canvas');
+      const { default: jsPDF } = await import('jspdf');
 
+      const canvas = await html2canvas(data, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 208;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
+      }
 
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
-        pdf.save(`StepUp_SIP_Projection_${this.periodInYears}Y.pdf`);
-      });
+      pdf.save(`StepUp_SIP_Projection_${this.periodInYears}Y.pdf`);
     }
   }
 }

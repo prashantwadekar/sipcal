@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { CalculationService } from '../calculation.service';
 import { InvestmentData } from '../investment-data';
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// jsPDF and html2canvas are dynamically imported inside exportPdf to keep them out of the initial bundle.
 
 @Component({
   selector: 'app-swp-calculator',
@@ -227,23 +226,25 @@ export class SwpCalculatorComponent {
     );
   }
 
-  private exportPdf(tableId: string, fileName: string) {
+  private async exportPdf(tableId: string, fileName: string) {
     const element = document.getElementById(tableId);
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then((canvas) => {
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 208;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      pdf.addImage(
-        canvas.toDataURL('image/png'),
-        'PNG',
-        0,
-        0,
-        imgWidth,
-        imgHeight
-      );
-      pdf.save(fileName);
-    });
+    const { default: html2canvas } = await import('html2canvas');
+    const { default: jsPDF } = await import('jspdf');
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 208;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(
+      canvas.toDataURL('image/png'),
+      'PNG',
+      0,
+      0,
+      imgWidth,
+      imgHeight
+    );
+    pdf.save(fileName);
   }
 }
