@@ -1,288 +1,311 @@
-/* src/app/investments/sip-calculator/sip-calculator.component.scss */
-
-// --- Layout & Panels ---
+/* ===================== LAYOUT ===================== */
 .calculator-container {
-    display: flex;
-    gap: 30px;
-    padding: 20px;
+  display: flex;
+  gap: 30px;
+  padding: 20px;
 
-    @media (max-width: 900px) {
-        flex-direction: column;
-    }
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.input-panel,
+.output-panel {
+  padding: 25px;
+  border-radius: 12px;
 }
 
 .input-panel {
-    flex: 1;
-    min-width: 300px;
-    padding: 25px;
-    background-color: var(--panel-bg); // Light gray for input
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  min-width: 300px;
+  background-color: var(--panel-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .output-panel {
-    flex: 2;
-    padding: 25px;
-    background-color: var(--card-background);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+  flex: 2;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
 }
 
+/* ===================== TITLES ===================== */
 .panel-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: var(--text-color);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: var(--text-color);
+
+  &.table-title {
+    margin-bottom: 0;
+  }
 }
 
-// --- Input Styling ---
+/* ===================== INPUTS ===================== */
 .input-group {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 
-    label {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-        color: #6c6c70;
-    }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #6c6c70;
+  }
 
-    input[type="number"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 16px;
-        box-sizing: border-box;
-        transition: border-color 0.2s ease;
-    }
-}
-
-.analyze-button {
+  input[type="number"] {
     width: 100%;
-    padding: 14px;
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
+    padding: 12px;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease;
 
-    &:hover {
-        background-color: darken(#34c759, 10%);
-        box-shadow: 0 4px 10px rgba(52, 199, 89, 0.4);
+    &:focus {
+      outline: none;
+      border-color: var(--secondary-color);
     }
-
-    i {
-        margin-right: 8px;
-    }
+  }
 }
 
-// --- Output/Summary Styles ---
-.summary-card {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: #f0f0f5; // Light card background
+/* ===================== BUTTON ===================== */
+.analyze-button {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-    .summary-item {
-        padding: 15px 0; // Removed background from individual item for cleaner look
-        text-align: center;
-        border-right: 1px solid var(--border-color);
+  &:hover {
+    background-color: darken(#34c759, 10%);
+    box-shadow: 0 4px 10px rgba(52, 199, 89, 0.35);
+  }
 
-        &:last-child {
-            border-right: none;
-        }
-
-        .label {
-            display: block;
-            font-size: 14px;
-            color: #6c6c70;
-            margin-bottom: 5px;
-        }
-
-        .value {
-            font-size: 22px;
-            font-weight: 700;
-
-            &.invested { color: var(--text-color); }
-            &.returns { color: var(--secondary-color); }
-            &.total { color: var(--primary-color); font-size: 24px; }
-        }
-    }
-}
-
-// --- Table Styles ---
-.table-title { margin-top: 30px; }
-
-.table-scroll { overflow-x: auto; }
-
-.growth-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-
-    th, td {
-        text-align: left;
-        padding: 12px 15px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    th {
-        font-size: 14px;
-        font-weight: 600;
-        color: #6c6c70;
-        background-color: #f7f7f9;
-        position: sticky;
-        top: 0;
-    }
-
-    tr:last-child td { border-bottom: none; }
-    tr:hover { background-color: #fcfcfd; }
-}
-
-
-// --- 💰 CIRCULAR CHART STYLES (Provided in your prompt) ---
-.chart-container {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.chart-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.donut-chart-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.donut-chart {
-    --size: 180px;
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-
-    background: conic-gradient(
-        var(--secondary-color) 0%,
-        var(--secondary-color) var(--returns-percent),
-        var(--primary-color) var(--returns-percent),
-        var(--primary-color) 100%
-    );
-
-    &::before {
-        content: "";
-        position: absolute;
-        width: 60%;
-        height: 60%;
-        background: var(--panel-bg); // Use panel-bg variable
-        border-radius: 50%;
-    }
-}
-
-.center-text {
-    position: relative;
-    z-index: 10;
-    display: block;
-    text-align: center;
-    line-height: 1.2;
-    font-size: 16px;
-    color: var(--primary-color);
-    max-width: 80%;
-
-    small {
-        display: block;
-        font-size: 12px;
-        font-weight: 500;
-        color: #6c6c70;
-    }
-}
-
-.chart-legend {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 10px 0;
-    margin-top: 10px;
-    font-size: 13px;
-    color: #4a4a4a;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    font-weight: 500;
-}
-
-.color-box {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
+  i {
     margin-right: 8px;
-
-    &.invested-color { background-color: var(--primary-color); }
-    &.returns-color { background-color: var(--secondary-color); }
+  }
 }
 
-/* src/app/investments/sip-calculator/sip-calculator.component.scss */
+/* ===================== SUMMARY ===================== */
+.summary-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  background-color: #f0f0f5;
 
-// ... (Existing styles) ...
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 
-// --- NEW STYLES FOR EXPORT ICONS ---
+  .summary-item {
+    text-align: center;
+    padding: 15px 0;
+    border-right: 1px solid var(--border-color);
+
+    &:last-child {
+      border-right: none;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #6c6c70;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: 700;
+
+      &.invested {
+        color: var(--text-color);
+      }
+
+      &.returns {
+        color: var(--secondary-color);
+      }
+
+      &.total {
+        font-size: 24px;
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+/* ===================== TABLE HEADER ===================== */
 .table-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 30px;
-    margin-bottom: 15px; // Reduced margin from panel-title for cleaner look
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0 15px;
+  gap: 10px;
 }
 
+/* ===================== EXPORT ICONS ===================== */
 .download-icons {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .icon-button {
-    background: none;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
 
-    &:hover {
-        background-color: #f0f0f5;
-    }
+  &:hover {
+    background-color: #f0f0f5;
+  }
 }
 
 .excel-icon {
-    color: #21a366; /* Excel green */
+  color: #21a366;
 }
 
 .pdf-icon {
-    color: #e21c1c; /* PDF red */
+  color: #e21c1c;
 }
 
-.panel-title.table-title {
-    margin-bottom: 0; /* Remove bottom margin from title when in header row */
+/* ===================== TABLE ===================== */
+.table-scroll {
+  max-height: 380px;
+  overflow-y: auto;
+  overflow-x: auto;
+  margin-bottom: 25px;
 }
 
-// ... (Rest of the table styles) ...
+.growth-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+
+  th {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c6c70;
+    background-color: #f7f7f9;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  tr:hover {
+    background-color: #fcfcfd;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+/* ===================== DONUT CHART ===================== */
+.chart-container {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.donut-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.donut-chart {
+  --size: 180px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+
+  background: conic-gradient(
+    var(--secondary-color) 0%,
+    var(--secondary-color) var(--returns-percent),
+    var(--primary-color) var(--returns-percent),
+    var(--primary-color) 100%
+  );
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    background-color: var(--panel-bg);
+    border-radius: 50%;
+  }
+}
+
+.center-text {
+  position: relative;
+  z-index: 10;
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+  font-size: 16px;
+  color: var(--primary-color);
+
+  small {
+    display: block;
+    font-size: 12px;
+    color: #6c6c70;
+  }
+}
+
+/* ===================== LEGEND ===================== */
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 13px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.color-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 8px;
+
+  &.invested-color {
+    background-color: var(--primary-color);
+  }
+
+  &.returns-color {
+    background-color: var(--secondary-color);
+  }
+}

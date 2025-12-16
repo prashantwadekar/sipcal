@@ -7,6 +7,7 @@ import { SipCalculatorComponent } from './investments/sip-calculator/sip-calcula
 import { LumpsumCalculatorComponent } from './investments/lumpsum-calculator/lumpsum-calculator.component';
 import { StepUpCalculatorComponent } from './investments/step-up-sip-calculator/step-up-sip-calculator.component';
 import { CombinedCalculatorComponent } from './investments/combined-calculator/combined-calculator.component';
+import { SwpCalculatorComponent } from './investments/swp-calculator/swp-calculator.component';
 
 @NgModule({
   declarations: [
@@ -14,12 +15,11 @@ import { CombinedCalculatorComponent } from './investments/combined-calculator/c
     SipCalculatorComponent,
     LumpsumCalculatorComponent,
     StepUpCalculatorComponent,
-    CombinedCalculatorComponent
+    CombinedCalculatorComponent,
+    SwpCalculatorComponent,
   ],
-  imports: [
-    BrowserModule,FormsModule
-  ],
+  imports: [BrowserModule, FormsModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

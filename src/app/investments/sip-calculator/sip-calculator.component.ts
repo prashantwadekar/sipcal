@@ -24,6 +24,8 @@ export class SipCalculatorComponent {
   finalReturns: number = 0;
   finalValue: number = 0;
   yearWiseGrowth: InvestmentData[] = [];
+  monthWiseGrowth: any[] = [];
+  totalMonths: number = 0;
 
   // Chart Properties
   returnsPercentage: number = 0;
@@ -60,6 +62,40 @@ export class SipCalculatorComponent {
       this.finalInvestment = lastYearData.investedAmount;
       this.finalReturns = lastYearData.estimatedReturns;
       this.finalValue = lastYearData.totalValue;
+
+      // Build month-wise table (simulation)
+      this.monthWiseGrowth = [];
+      const totalMonths = this.calcService.parseYearsInputToMonths(
+        this.periodInYears
+      );
+      this.totalMonths = totalMonths;
+      let invested = 0;
+      let totalValue = 0;
+      const monthlyRate = this.expectedRate / 100 / 12;
+
+      for (let m = 1; m <= totalMonths; m++) {
+        const prevTotal = totalValue;
+        invested += this.monthlyInvestment;
+        totalValue += this.monthlyInvestment;
+
+        const amountBeforeInterest = Math.round(
+          prevTotal + this.monthlyInvestment
+        );
+        const interestThisMonth = totalValue * monthlyRate;
+        totalValue += interestThisMonth;
+
+        this.monthWiseGrowth.push({
+          month: m,
+          amountBeforeInterest,
+          monthlyInvestment: Math.round(this.monthlyInvestment),
+          monthlyReturnAmount: Math.round(interestThisMonth),
+          monthlyReturnRate: Number((monthlyRate * 100).toFixed(4)),
+          investedAmount: Math.round(invested),
+          estimatedReturns: Math.round(totalValue - invested),
+          totalValue: Math.round(totalValue),
+        });
+      }
+
       this.isCalculated = true;
 
       // 4. Calculate Chart Percentages
@@ -97,7 +133,7 @@ export class SipCalculatorComponent {
 
     // 1. Prepare Data for Excel
     const dataForExport: any[] = this.yearWiseGrowth.map((item) => ({
-      Year: item.year,
+      Period: item.yearLabel || item.year,
       'Invested Amount (₹)': item.investedAmount,
       'Estimated Returns (₹)': item.estimatedReturns,
       'Total Value (₹)': item.totalValue,
@@ -156,5 +192,75 @@ export class SipCalculatorComponent {
         pdf.save(`SIP_Projection_${this.periodInYears}Y.pdf`);
       });
     }
+  }
+
+  // MONTH-WISE EXCEL
+  downloadMonthWiseExcel(): void {
+    if (!this.isCalculated || this.monthWiseGrowth.length === 0) {
+      alert('Please analyze the growth before downloading.');
+      return;
+    }
+
+    const dataForExport: any[] = this.monthWiseGrowth.map((item) => ({
+      Month: item.month,
+      'Amount (₹)': item.amountBeforeInterest,
+      'Return (₹)': item.monthlyReturnAmount,
+      'Total (₹)': item.totalValue,
+      'Return Rate (per month)': item.monthlyReturnRate,
+      'Monthly Investment (₹)': item.monthlyInvestment,
+    }));
+
+    const totalMonthlyReturns = this.monthWiseGrowth.reduce(
+      (s, it) => s + (it.monthlyReturnAmount || 0),
+      0
+    );
+
+    dataForExport.push({
+      Month: 'SUMMARY',
+      'Amount (₹)': '',
+      'Return (₹)': totalMonthlyReturns,
+      'Total (₹)': this.finalValue,
+      'Return Rate (per month)': '',
+      'Monthly Investment (₹)': this.monthlyInvestment,
+    });
+
+    const ws = XLSX.utils.json_to_sheet(dataForExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'MonthWise');
+    XLSX.writeFile(wb, `SIP_Month_Wise_${this.periodInYears}Y.xlsx`);
+  }
+
+  // MONTH-WISE PDF
+  downloadMonthWisePdf(): void {
+    if (!this.isCalculated || this.monthWiseGrowth.length === 0) {
+      alert('Please analyze the growth before downloading.');
+      return;
+    }
+
+    this.exportPdf(
+      'monthWiseTable',
+      `SIP_Month_Wise_${this.periodInYears}Y.pdf`
+    );
+  }
+
+  // Reusable helper to export a table as PDF
+  private exportPdf(tableId: string, fileName: string) {
+    const element = document.getElementById(tableId);
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then((canvas) => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 208;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(
+        canvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        0,
+        imgWidth,
+        imgHeight
+      );
+      pdf.save(fileName);
+    });
   }
 }

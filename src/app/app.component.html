@@ -20,6 +20,9 @@
     >
       Step-Up SIP
     </button>
+    <button [class.active]="activeTab === 'SWP'" (click)="setActiveTab('SWP')">
+      SWP
+    </button>
     <button
       [class.active]="activeTab === 'Combined'"
       (click)="setActiveTab('Combined')"
@@ -39,5 +42,6 @@
     <app-combined-calculator
       *ngIf="activeTab === 'Combined'"
     ></app-combined-calculator>
+    <app-swp-calculator *ngIf="activeTab === 'SWP'"></app-swp-calculator>
   </main>
 </div>

@@ -26,6 +26,8 @@ export class StepUpCalculatorComponent {
   finalReturns: number = 0;
   finalValue: number = 0;
   yearWiseGrowth: InvestmentData[] = [];
+  monthWiseGrowth: any[] = [];
+  totalMonths: number = 0;
 
   // Chart Properties
   returnsPercentage: number = 0;
@@ -59,6 +61,46 @@ export class StepUpCalculatorComponent {
       this.finalInvestment = lastYearData.investedAmount;
       this.finalReturns = lastYearData.estimatedReturns;
       this.finalValue = lastYearData.totalValue;
+
+      // Build month-wise breakdown using step-up schedule
+      this.monthWiseGrowth = [];
+      const totalMonths = this.calcService.parseYearsInputToMonths(
+        this.periodInYears
+      );
+      this.totalMonths = totalMonths;
+      const monthlyRate = this.expectedRate / 100 / 12;
+
+      let totalValue = 0;
+      let totalInvested = 0;
+
+      for (let m = 1; m <= totalMonths; m++) {
+        const yearIndex = Math.floor((m - 1) / 12);
+        const monthlyContribution = Math.round(
+          this.monthlyInvestment *
+            Math.pow(1 + this.stepUpRate / 100, yearIndex)
+        );
+
+        const amountBeforeInterest = Math.round(
+          totalValue + monthlyContribution
+        );
+        totalInvested += monthlyContribution;
+        totalValue += monthlyContribution;
+
+        const interestThisMonth = totalValue * monthlyRate;
+        totalValue += interestThisMonth;
+
+        this.monthWiseGrowth.push({
+          month: m,
+          amountBeforeInterest,
+          monthlyInvestment: monthlyContribution,
+          monthlyReturnAmount: Math.round(interestThisMonth),
+          monthlyReturnRate: Number((monthlyRate * 100).toFixed(4)),
+          investedAmount: Math.round(totalInvested),
+          estimatedReturns: Math.round(totalValue - totalInvested),
+          totalValue: Math.round(totalValue),
+        });
+      }
+
       this.isCalculated = true;
 
       if (this.finalValue > 0) {
@@ -81,6 +123,76 @@ export class StepUpCalculatorComponent {
     });
   }
 
+  // MONTH-WISE EXCEL
+  downloadMonthWiseExcel(): void {
+    if (!this.isCalculated || this.monthWiseGrowth.length === 0) {
+      alert('Please analyze the growth before downloading.');
+      return;
+    }
+
+    const dataForExport: any[] = this.monthWiseGrowth.map((item) => ({
+      Month: item.month,
+      'Amount (₹)': item.amountBeforeInterest,
+      'Return (₹)': item.monthlyReturnAmount,
+      'Total (₹)': item.totalValue,
+      'Return Rate (per month)': item.monthlyReturnRate,
+      'Monthly Investment (₹)': item.monthlyInvestment,
+    }));
+
+    const totalMonthlyReturns = this.monthWiseGrowth.reduce(
+      (s, it) => s + (it.monthlyReturnAmount || 0),
+      0
+    );
+
+    dataForExport.push({
+      Month: 'SUMMARY',
+      'Amount (₹)': '',
+      'Return (₹)': totalMonthlyReturns,
+      'Total (₹)': this.finalValue,
+      'Return Rate (per month)': '',
+      'Monthly Investment (₹)': this.monthlyInvestment,
+    });
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataForExport);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'MonthWise');
+    XLSX.writeFile(wb, `StepUp_Month_Wise_${this.periodInYears}Y.xlsx`);
+  }
+
+  // MONTH-WISE PDF
+  downloadMonthWisePdf(): void {
+    if (!this.isCalculated || this.monthWiseGrowth.length === 0) {
+      alert('Please analyze the growth before downloading.');
+      return;
+    }
+
+    this.exportPdf(
+      'monthWiseTable',
+      `StepUp_Month_Wise_${this.periodInYears}Y.pdf`
+    );
+  }
+
+  // Reusable helper to export a table as PDF
+  private exportPdf(tableId: string, fileName: string) {
+    const element = document.getElementById(tableId);
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then((canvas) => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 208;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(
+        canvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        0,
+        imgWidth,
+        imgHeight
+      );
+      pdf.save(fileName);
+    });
+  }
+
   // The download methods are the same, just updated the file name string
   downloadExcel(): void {
     if (!this.isCalculated || this.yearWiseGrowth.length === 0) {
@@ -89,7 +201,7 @@ export class StepUpCalculatorComponent {
     }
 
     const dataForExport: any[] = this.yearWiseGrowth.map((item) => ({
-      Year: item.year,
+      Period: item.yearLabel || item.year,
       'Invested Amount (₹)': item.investedAmount,
       'Estimated Returns (₹)': item.estimatedReturns,
       'Total Value (₹)': item.totalValue,
