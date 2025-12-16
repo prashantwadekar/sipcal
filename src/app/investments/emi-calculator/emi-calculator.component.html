@@ -1,0 +1,173 @@
+<div class="calculator-container">
+  <div class="input-panel">
+    <h3 class="panel-title">EMI / Loan Calculator</h3>
+
+    <div class="input-group">
+      <label>Purchase Price (₹)</label>
+      <input type="number" [(ngModel)]="purchasePrice" min="0" />
+    </div>
+
+    <div class="input-group">
+      <label>Down Payment (₹)</label>
+      <input type="number" [(ngModel)]="downPayment" min="0" />
+    </div>
+
+    <div class="input-group">
+      <label>Interest Rate (% p.a)</label>
+      <input type="number" [(ngModel)]="interestRate" min="0" max="100" />
+    </div>
+
+    <div class="input-group">
+      <label>Loan Period (Months)</label>
+      <input type="number" [(ngModel)]="loanPeriodMonths" min="1" />
+    </div>
+
+    <button class="analyze-button" (click)="analyze()">
+      <i class="fas fa-calculator"></i> Calculate EMI
+    </button>
+
+    <div class="chart-container" *ngIf="isCalculated">
+      <h4 class="chart-title">Loan Overview</h4>
+      <div class="donut-chart-wrapper">
+        <div
+          class="donut-chart"
+          [style.--returns-percent]="getReturnsPercent()"
+        >
+          <span class="center-text">
+            <small>Loan Balance</small>
+            {{
+              formatCurrency(
+                monthWiseSchedule.length
+                  ? monthWiseSchedule[monthWiseSchedule.length - 1]
+                      .closingBalance
+                  : loanAmount
+              )
+            }}
+          </span>
+        </div>
+      </div>
+
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="color-box invested-color"></span> Principal ({{
+            formatCurrency(loanAmount)
+          }})
+        </div>
+        <div class="legend-item">
+          <span class="color-box returns-color"></span> Interest ({{
+            formatCurrency(totalInterest)
+          }})
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="output-panel" *ngIf="isCalculated">
+    <h3 class="panel-title">Loan Summary</h3>
+
+    <div class="summary-card">
+      <div class="summary-item">
+        <span class="label">Loan Amount</span>
+        <span class="value invested">{{ formatCurrency(loanAmount) }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Monthly EMI</span>
+        <span class="value returns">{{ formatCurrency(emi) }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="label total-label">Total Interest</span>
+        <span class="value total">{{ formatCurrency(totalInterest) }}</span>
+      </div>
+    </div>
+
+    <div class="table-header-row">
+      <h3 class="panel-title table-title">Year-wise Breakdown</h3>
+      <div class="download-icons">
+        <button
+          class="icon-button excel-icon"
+          (click)="downloadYearWiseExcel()"
+          title="Download year-wise Excel"
+        >
+          <i class="fas fa-file-excel"></i>
+        </button>
+        <button
+          class="icon-button pdf-icon"
+          (click)="downloadYearWisePdf()"
+          title="Download year-wise PDF"
+        >
+          <i class="fas fa-file-pdf"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="growth-table" id="yearWiseTable">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Principal Paid (₹)</th>
+            <th>Interest Paid (₹)</th>
+            <th>Remaining Balance (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let y of yearWiseSchedule">
+            <td>{{ y.yearLabel || y.year }}</td>
+            <td>{{ formatCurrency(y.principalPaid) }}</td>
+            <td>{{ formatCurrency(y.interestPaid) }}</td>
+            <td>{{ formatCurrency(y.remainingBalance) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Month wise -->
+    <div class="table-header-row">
+      <h3 class="panel-title table-title">
+        Month-wise Schedule
+        <small>({{ monthWiseSchedule.length }} months)</small>
+      </h3>
+      <div class="download-icons">
+        <button
+          class="icon-button excel-icon"
+          (click)="downloadMonthWiseExcel()"
+          title="Download month-wise Excel"
+        >
+          <i class="fas fa-file-excel"></i>
+        </button>
+        <button
+          class="icon-button pdf-icon"
+          (click)="downloadMonthWisePdf()"
+          title="Download month-wise PDF"
+        >
+          <i class="fas fa-file-pdf"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="growth-table" id="monthWiseTable">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Opening Balance (₹)</th>
+            <th>EMI (₹)</th>
+            <th>Interest (₹)</th>
+            <th>Principal (₹)</th>
+            <th>Closing Balance (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of monthWiseSchedule">
+            <td>{{ m.month }}</td>
+            <td>{{ formatCurrency(m.openingBalance) }}</td>
+            <td>{{ formatCurrency(m.emi) }}</td>
+            <td>{{ formatCurrency(m.interestAmount) }}</td>
+            <td>{{ formatCurrency(m.principalAmount) }}</td>
+            <td>{{ formatCurrency(m.closingBalance) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -23,6 +23,9 @@
     <button [class.active]="activeTab === 'SWP'" (click)="setActiveTab('SWP')">
       SWP
     </button>
+    <button [class.active]="activeTab === 'EMI'" (click)="setActiveTab('EMI')">
+      EMI
+    </button>
     <button
       [class.active]="activeTab === 'Combined'"
       (click)="setActiveTab('Combined')"
@@ -43,5 +46,6 @@
       *ngIf="activeTab === 'Combined'"
     ></app-combined-calculator>
     <app-swp-calculator *ngIf="activeTab === 'SWP'"></app-swp-calculator>
+    <app-emi-calculator *ngIf="activeTab === 'EMI'"></app-emi-calculator>
   </main>
 </div>

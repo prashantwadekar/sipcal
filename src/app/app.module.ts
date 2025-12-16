@@ -8,6 +8,7 @@ import { LumpsumCalculatorComponent } from './investments/lumpsum-calculator/lum
 import { StepUpCalculatorComponent } from './investments/step-up-sip-calculator/step-up-sip-calculator.component';
 import { CombinedCalculatorComponent } from './investments/combined-calculator/combined-calculator.component';
 import { SwpCalculatorComponent } from './investments/swp-calculator/swp-calculator.component';
+import { EmiCalculatorComponent } from './investments/emi-calculator/emi-calculator.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { SwpCalculatorComponent } from './investments/swp-calculator/swp-calcula
     StepUpCalculatorComponent,
     CombinedCalculatorComponent,
     SwpCalculatorComponent,
+    EmiCalculatorComponent,
   ],
   imports: [BrowserModule, FormsModule],
   providers: [],

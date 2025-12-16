@@ -11,7 +11,8 @@ export class AppComponent {
   title = 'Investment Planning Suite';
 
   // Define the available tabs (must match the buttons and the *ngIf conditions in HTML)
-  activeTab: 'SIP' | 'Lumpsum' | 'StepUpSIP' | 'SWP' | 'Combined' = 'SIP';
+  activeTab: 'SIP' | 'Lumpsum' | 'StepUpSIP' | 'SWP' | 'EMI' | 'Combined' =
+    'SIP';
 
   // Array to drive the navigation buttons
   tabs = [
@@ -19,6 +20,7 @@ export class AppComponent {
     { name: 'Lumpsum', value: 'Lumpsum' },
     { name: 'Step-Up SIP', value: 'StepUpSIP' },
     { name: 'SWP', value: 'SWP' },
+    { name: 'EMI', value: 'EMI' },
     { name: 'Lumpsum + SIP', value: 'Combined' },
   ];
 
@@ -27,7 +29,7 @@ export class AppComponent {
    * @param tab The value of the tab to make active.
    */
   setActiveTab(
-    tab: 'SIP' | 'Lumpsum' | 'StepUpSIP' | 'SWP' | 'Combined'
+    tab: 'SIP' | 'Lumpsum' | 'StepUpSIP' | 'SWP' | 'EMI' | 'Combined'
   ): void {
     this.activeTab = tab;
   }
